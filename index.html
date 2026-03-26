@@ -1,35 +1,53 @@
-
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>隱藏的真心話</title>
+    <title>隱藏的真心話 - 雲端管理版</title>
     <style>
-        :root { --primary: #4a90e2; --bg: #f8fafc; --card: #ffffff; }
+        :root { --primary: #4a90e2; --bg: #f8fafc; --card: #ffffff; --danger: #ff7675; }
         body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg); padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: auto; background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; }
+        
+        /* 教師面板 */
         #teacherPanel { display: none; background: #fffde7; border: 2px dashed #f1c40f; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
         .edit-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .edit-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        h1 { text-align: center; color: var(--primary); margin-bottom: 20px; }
         .admin-toggle { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; background: #eee; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px; opacity: 0.6; }
+
+        h1 { text-align: center; color: var(--primary); margin-bottom: 20px; }
         .input-section { background: #e3f2fd; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
         .input-group { display: flex; gap: 10px; margin-top: 10px; }
         #wordInput { flex: 1; padding: 12px; border: 2px solid #bcd0e7; border-radius: 8px; }
         .add-btn { padding: 10px 25px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+
+        /* 詞庫與刪除按鈕 */
         .word-bank { display: flex; flex-wrap: wrap; gap: 10px; min-height: 80px; padding: 15px; border: 2px dashed #cbd5e0; border-radius: 12px; background: #fff; margin-bottom: 30px; }
-        .word-item { padding: 6px 15px; background: #6c5ce7; color: white; border-radius: 20px; cursor: grab; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .word-item { 
+            display: flex; align-items: center; gap: 8px; padding: 6px 15px; 
+            background: #6c5ce7; color: white; border-radius: 20px; cursor: grab; 
+            font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .del-word { background: rgba(255,255,255,0.3); border: none; color: white; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+        .del-word:hover { background: var(--danger); }
+
+        /* 句型滑動 */
         .sentence-slider { position: relative; background: #fff; border: 3px solid #e3f2fd; border-radius: 20px; padding: 50px 70px; margin-bottom: 30px; min-height: 180px; display: flex; align-items: center; }
         .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 10; }
         .prev-btn { left: 15px; } .next-btn { right: 15px; }
         .sentence-content { font-size: 1.4rem; line-height: 3.5; width: 100%; word-break: break-all; }
+
         .drop-zone { display: inline-flex; align-items: center; justify-content: center; min-width: 110px; height: 40px; border: 2px dashed #bdc3c7; border-radius: 8px; margin: 0 5px; padding: 0 12px; vertical-align: middle; color: #999; font-size: 0.9rem; cursor: pointer; background-color: #fafafa; }
         .drop-zone.filled { border: 2px solid #2ecc71; color: #2980b9; background-color: #fff; font-weight: bold; font-size: 1.25rem; height: auto; min-height: 40px; line-height: 1.4; padding: 5px 15px; white-space: normal; }
+
         .upload-section { text-align: center; margin-bottom: 30px; }
         .upload-btn { background: #27ae60; color: white; padding: 12px 40px; border: none; border-radius: 30px; font-size: 1.1rem; cursor: pointer; font-weight: bold; }
+
+        /* 留言板與刪除 */
         .message-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 20px; background: #f1f2f6; border-radius: 15px; }
-        .message-item { padding: 15px; border-radius: 12px; font-size: 1.05rem; box-shadow: 3px 3px 8px rgba(0,0,0,0.05); transform: rotate(-0.5deg); }
+        .message-item { position: relative; padding: 20px 15px 15px; border-radius: 12px; font-size: 1.05rem; box-shadow: 3px 3px 8px rgba(0,0,0,0.05); }
+        .del-msg { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+
         .bg-0 { background: #dff9fb; } .bg-1 { background: #e3fced; } .bg-2 { background: #fef9e7; } .bg-3 { background: #fce4ec; } .bg-4 { background: #f3f0ff; }
         #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 999; font-weight: bold; }
     </style>
@@ -43,14 +61,17 @@
     <h1>隱藏的真心話</h1>
 
     <div id="teacherPanel">
-        <strong>🛠️ 雲端句型管理 (格式: [引導語])：</strong><br><br>
+        <strong>🛠️ 雲端句型管理：</strong><br><br>
         <div id="configArea"></div>
-        <button onclick="addNewConfigRow()" style="padding:5px 10px;">＋ 新增句型</button>
-        <button onclick="saveConfig()" style="background:#27ae60; color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">儲存並同步到雲端</button>
+        <button onclick="addNewConfigRow()">＋ 新增句型</button>
+        <button onclick="saveConfig()" style="background:#27ae60; color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">儲存句型</button>
+        <hr>
+        <strong>🧹 留言板管理：</strong><br><br>
+        <button onclick="clearBoard()" style="background:var(--danger); color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">清空全班留言板(慎用)</button>
     </div>
 
     <div class="input-section">
-        <strong>1. 寫作詞庫</strong>
+        <strong>1. 寫作詞庫 (點擊詞語中的 X 可刪除)</strong>
         <div class="input-group">
             <input type="text" id="wordInput" placeholder="輸入自訂詞彙...">
             <button class="add-btn" onclick="addWord()">加入</button>
@@ -72,68 +93,67 @@
 </div>
 
 <script>
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBbtw0As7qv6GHIkojw0uLsDV_sNkZedIXo25I1m47yEr7OMypQTQziJOtGVYphydt/exec'; // <--- 務必填入你的網址
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBbtw0As7qv6GHIkojw0uLsDV_sNkZedIXo25I1m47yEr7OMypQTQziJOtGVYphydt/exec';
 
     let sentenceConfigs = [];
     let currentIdx = 0;
     const defaultWords = ["泛黃", "粗糙", "閃閃發亮", "布滿灰塵", "總是嚴厲的爸爸", "愛笑的外婆", "最好的玩伴", "蟬鳴陣陣", "細雨綿綿", "熱鬧非凡", "吞了一顆酸梅", "照進裂縫的陽光", "斷了線的風箏"];
 
-    // 初始化與讀取雲端
     async function syncFromCloud() {
         document.getElementById('loadingOverlay').style.display = 'flex';
         try {
             const resp = await fetch(GOOGLE_SCRIPT_URL);
             const data = await resp.json();
-            
-            // 更新句型
             sentenceConfigs = data.sentences.length > 0 ? data.sentences : ["[物件] 讓我想起 [回憶]"];
-            
-            // 更新留言板
             const board = document.getElementById('messageBoard');
             board.innerHTML = "";
             data.messages.reverse().forEach(m => displayMessage(m.content, m.colorIdx));
-            
             renderSentence();
-        } catch (e) { alert("同步失敗，請確認 Script 網址或網路。"); }
+        } catch (e) { console.error(e); }
         document.getElementById('loadingOverlay').style.display = 'none';
     }
 
-    // 上傳作品
     async function uploadMessage() {
         const zones = document.querySelectorAll('.drop-zone');
         if(![...zones].every(z => z.classList.contains('filled'))) { alert("還有空格沒填完！"); return; }
-        
         const content = document.getElementById('sentenceArea').innerText;
         const colorIdx = Math.floor(Math.random() * 5);
-        
-        displayMessage(content, colorIdx); // 先顯示
-        renderSentence(); // 重置空格
-
+        displayMessage(content, colorIdx); 
+        renderSentence(); 
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify({ type: "UPLOAD_MESSAGE", content: content, colorIdx: colorIdx })
         });
     }
 
-    // 儲存句型到雲端
+    // 這裡是新增的：清空留言板功能
+    async function clearBoard() {
+        if(!confirm("確定要清空所有同學的留言嗎？此動作無法復原。")) return;
+        document.getElementById('loadingOverlay').style.display = 'flex';
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ type: "CLEAR_MESSAGES" }) // 注意：這需要你在 Google Script 也加上對應邏輯
+        });
+        location.reload();
+    }
+
     async function saveConfig() {
         const inputs = document.querySelectorAll('.edit-input');
         const newList = [...inputs].map(i => i.value.trim()).filter(v => v !== "");
-        
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify({ type: "SAVE_SENTENCES", payload: newList })
         });
-        
-        alert("句型已同步到雲端！");
-        location.reload(); // 重新整理以確保同步
+        alert("句型已同步！");
+        location.reload();
     }
 
-    // --- 介面控制與拖放邏輯 (與先前版本一致) ---
     function displayMessage(content, idx) {
         const div = document.createElement('div');
         div.className = `message-item bg-${idx}`;
-        div.innerHTML = `<strong>同學分享：</strong><br>${content}`;
+        // 增加刪除按鈕 (僅前端刪除，若要徹底刪除需搭配資料庫 ID，目前設計點擊即消失)
+        div.innerHTML = `<button class="del-msg" onclick="this.parentElement.remove()">✕</button>
+                         <strong>同學分享：</strong><br>${content}`;
         document.getElementById('messageBoard').prepend(div);
     }
 
@@ -155,10 +175,17 @@
         if (input.value.trim()) { createWordItem(input.value.trim()); input.value = ''; }
     }
 
+    // 修改詞語產生函數，加入刪除鈕
     function createWordItem(text) {
         const div = document.createElement('div');
-        div.className = 'word-item'; div.draggable = true; div.innerText = text;
-        div.ondragstart = (e) => e.dataTransfer.setData('text', e.target.innerText);
+        div.className = 'word-item'; 
+        div.draggable = true;
+        div.innerHTML = `<span>${text}</span><button class="del-word" onclick="this.parentElement.remove()">✕</button>`;
+        div.ondragstart = (e) => {
+            // 只抓取文字內容，不抓取按鈕的 X
+            const txt = e.target.querySelector('span').innerText;
+            e.dataTransfer.setData('text', txt);
+        };
         document.getElementById('wordBank').appendChild(div);
     }
 
