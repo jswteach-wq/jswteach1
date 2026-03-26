@@ -3,55 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>「借事抒情」情境創作挑戰</title>
+    <title>借事抒情：雲端寫作教學盤</title>
     <style>
-        :root { --primary: #4a90e2; --bg: #f4f7f6; --danger: #ff7675; }
+        :root { --primary: #4a90e2; --bg: #f4f7f6; --danger: #ff7675; --success: #27ae60; --teacher: #f1c40f; }
         body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); padding: 20px; color: #333; }
         .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); position: relative; }
         
-        /* 情境選擇器 */
-        .scen-selector { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        /* 教師面板樣式 */
+        .admin-toggle { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; background: #eee; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px; opacity: 0.6; }
+        #teacherPanel { display: none; background: #fffde7; border: 2px dashed var(--teacher); padding: 20px; border-radius: 15px; margin-bottom: 20px; }
+        .edit-group { margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #ddd; }
+        .edit-input { width: 90%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
+
+        /* 情境選擇 */
+        .scen-selector { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
         .scen-btn { padding: 10px 20px; border: 2px solid var(--primary); background: white; color: var(--primary); border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         .scen-btn.active { background: var(--primary); color: white; transform: scale(1.05); }
 
-        /* 詞庫區 */
-        .word-bank { display: flex; flex-wrap: wrap; gap: 10px; min-height: 80px; padding: 15px; border: 2px dashed #cbd5e0; border-radius: 12px; margin-bottom: 20px; background: #fff; align-items: center; }
-        .word-item { 
-            display: flex; align-items: center; gap: 5px; padding: 8px 12px; 
-            background: #6c5ce7; color: white; border-radius: 20px; cursor: grab; 
-            font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
-        }
-        /* 詞語刪除小按鈕 */
-        .word-del { 
-            background: rgba(255,255,255,0.3); border: none; color: white; 
-            border-radius: 50%; width: 16px; height: 16px; cursor: pointer; 
-            font-size: 10px; line-height: 1; display: flex; align-items: center; justify-content: center;
-        }
-        .word-del:hover { background: var(--danger); }
+        /* 新增詞語區 */
+        .add-word-section { background: #e3f2fd; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #bbdefb; }
+        .input-group { display: flex; gap: 10px; margin-top: 8px; }
+        #customWord { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+        .add-btn { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* 句子空格區 */
-        .sentence-box { font-size: 1.6rem; line-height: 3; padding: 40px; border: 3px solid #e3f2fd; border-radius: 15px; background: #fafafa; min-height: 150px; }
-        .drop-zone { 
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 120px; height: 40px; border: 2px dashed #bdc3c7; border-radius: 8px; 
-            margin: 0 5px; vertical-align: middle; color: #bbb; font-size: 1rem; 
-            cursor: pointer; background: white; 
-        }
-        .drop-zone.filled { 
-            border: 2px solid #2ecc71; color: #2980b9; font-weight: bold; 
-            font-size: 1.4rem; background: #fff; padding: 0 10px; min-width: auto;
-        }
+        /* 詞庫與句子 */
+        .word-bank { display: flex; flex-wrap: wrap; gap: 10px; min-height: 80px; padding: 15px; border: 2px dashed #cbd5e0; border-radius: 12px; margin-bottom: 20px; background: #fff; }
+        .word-item { display: flex; align-items: center; gap: 8px; padding: 8px 15px; background: #6c5ce7; color: white; border-radius: 20px; cursor: grab; font-size: 0.95rem; }
+        .word-del { background: rgba(255,255,255,0.3); border: none; color: white; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+
+        .sentence-box { font-size: 1.6rem; line-height: 2.8; padding: 35px; border: 3px solid #e3f2fd; border-radius: 15px; background: #fafafa; margin-bottom: 20px; min-height: 120px; }
+        .drop-zone { display: inline-flex; align-items: center; justify-content: center; min-width: 130px; height: 45px; border: 2px dashed #bdc3c7; border-radius: 8px; margin: 0 5px; vertical-align: middle; color: #bbb; font-size: 1rem; cursor: pointer; background: white; }
+        .drop-zone.filled { border: 2px solid var(--success); color: #2980b9; font-weight: bold; font-size: 1.4rem; padding: 0 10px; min-width: auto; }
         
-        .upload-btn { display: block; width: 250px; margin: 30px auto; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
+        .upload-btn { display: block; width: 250px; margin: 20px auto; padding: 15px; background: var(--success); color: white; border: none; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
 
-        /* 留言板作品與刪除按鈕 */
+        /* 作品牆 */
         .message-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 30px; }
         .msg { padding: 20px; border-radius: 15px; background: #fff; box-shadow: 3px 3px 12px rgba(0,0,0,0.06); position: relative; }
-        .msg-del {
-            position: absolute; top: 10px; right: 10px; width: 24px; height: 24px;
-            background: var(--danger); color: white; border: none; border-radius: 50%;
-            cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;
-        }
+        .msg-del { position: absolute; top: 10px; right: 10px; width: 26px; height: 26px; background: var(--danger); color: white; border: none; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
         .bg-0 { background: #dff9fb; } .bg-1 { background: #e3fced; } .bg-2 { background: #fef9e7; }
     </style>
@@ -59,43 +48,59 @@
 <body>
 
 <div class="container">
-    <h1 style="text-align:center; color: var(--primary);">📝 「借事抒情」寫作魔法盤</h1>
+    <button class="admin-toggle" onclick="toggleAdmin()">⚙️ 教師後台</button>
+    <h1 style="text-align:center; color: var(--primary);">🖋️ 「借事抒情」寫作魔法盤</h1>
     
+    <div id="teacherPanel">
+        <strong>🛠️ 編輯各情境預設句型（請使用 [引導語] 格式）：</strong>
+        <div class="edit-group">
+            <label>🍂 懷舊回憶：</label><br>
+            <input type="text" id="edit-reminisce" class="edit-input">
+        </div>
+        <div class="edit-group">
+            <label>☀️ 快樂時光：</label><br>
+            <input type="text" id="edit-happy" class="edit-input">
+        </div>
+        <div class="edit-group">
+            <label>💧 挫折心情：</label><br>
+            <input type="text" id="edit-sad" class="edit-input">
+        </div>
+        <button onclick="saveAdminConfigs()" style="background:var(--success); color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">儲存所有句型變更</button>
+    </div>
+
     <div class="scen-selector">
         <button class="scen-btn active" id="btn-reminisce" onclick="selectScenario('reminisce')">🍂 懷舊回憶</button>
         <button class="scen-btn" id="btn-happy" onclick="selectScenario('happy')">☀️ 快樂時光</button>
         <button class="scen-btn" id="btn-sad" onclick="selectScenario('sad')">💧 挫折心情</button>
     </div>
 
-    <div style="margin-bottom:10px;">
-        <strong>1. 詞庫管理（可刪除不想要的詞，或自行輸入）</strong>
-        <div style="display:flex; gap:10px; margin-top:5px;">
-            <input type="text" id="customWord" placeholder="新增自訂詞彙..." style="flex:1; padding:8px; border-radius:5px; border:1px solid #ddd;">
-            <button onclick="addWord()" style="padding:8px 15px; background:var(--primary); color:white; border:none; border-radius:5px; cursor:pointer;">新增</button>
+    <div class="add-word-section">
+        <strong>➕ 新增自訂詞語：</strong>
+        <div class="input-group">
+            <input type="text" id="customWord" placeholder="輸入後點擊新增...">
+            <button class="add-btn" onclick="addWord()">新增</button>
         </div>
     </div>
+
     <div class="word-bank" id="wordBank" ondragover="event.preventDefault()"></div>
-
     <div class="sentence-box" id="sentenceArea"></div>
-
     <button class="upload-btn" onclick="upload()">🚀 分享我的作品</button>
-    
-    <h3 style="border-left: 5px solid var(--primary); padding-left: 10px;">💬 作品牆（可刪除自己的留言）</h3>
     <div class="message-board" id="board"></div>
 </div>
 
 <script>
-    const scenarios = {
+    // 初始資料
+    let scenarios = {
         reminisce: {
             words: ["舊照片", "泛黃", "外公", "操場角落", "酸溜溜", "那把雨傘", "粗糙", "布滿灰塵"],
             template: "看著那 [物件]，我彷彿回到了那個 [場景] 的午後，心裡感覺 [感受] 的。"
         },
         happy: {
-            words: ["閃閃發亮", "熱鬧非凡", "最好的玩伴", "大聲歡笑", "冰淇淋", "公園"],
+            words: ["閃閃發亮", "熱鬧非凡", "最好的玩伴", "大聲歡笑", "冰淇淋", "公園", "熱騰騰", "笑咪咪"],
             template: "記得那天在 [地點]，我和 [人物] 一起 [動作]，那是我最 [心情] 的回憶。"
         },
         sad: {
-            words: ["斷了線的風箏", "細雨綿綿", "吞了一顆酸梅", "考卷", "獨自一人", "沉重"],
+            words: ["斷了線的風箏", "細雨綿綿", "吞了一顆酸梅", "考卷", "獨自一人", "沉重", "昏暗", "烏雲密佈"],
             template: "手裡拿著 [物件]，窗外正下著 [天氣]，我的心情就像 [比喻] 一樣。"
         }
     };
@@ -104,15 +109,18 @@
 
     function selectScenario(type) {
         currentType = type;
-        document.querySelectorAll('.scen-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(`btn-${type}`).classList.add('active');
-
+        document.querySelectorAll('.scen-btn').forEach(b => b.classList.toggle('active', b.id === `btn-${type}`));
+        
         const bank = document.getElementById('wordBank');
         bank.innerHTML = "";
         scenarios[type].words.forEach(w => createWordElement(w));
 
+        renderSentenceArea();
+    }
+
+    function renderSentenceArea() {
         const area = document.getElementById('sentenceArea');
-        area.innerHTML = scenarios[type].template.replace(/\[(.*?)\]/g, (m, p1) => 
+        area.innerHTML = scenarios[currentType].template.replace(/\[(.*?)\]/g, (m, p1) => 
             `<span class="drop-zone" data-guide="${p1}" ondrop="drop(event)" ondragover="event.preventDefault()" onclick="manual(this)">${p1}</span>`
         );
     }
@@ -128,42 +136,50 @@
 
     function addWord() {
         const input = document.getElementById('customWord');
-        if(input.value.trim()) {
-            createWordElement(input.value.trim());
-            input.value = "";
-        }
+        if(input.value.trim()) { createWordElement(input.value.trim()); input.value = ""; }
     }
 
     function drop(e) {
         e.preventDefault();
         const txt = e.dataTransfer.getData('text');
-        if(e.target.classList.contains('drop-zone')) fill(e.target, txt);
+        if(e.target.classList.contains('drop-zone')) { e.target.innerText = txt; e.target.classList.add('filled'); }
     }
 
     function manual(el) {
         const txt = prompt(`請輸入 ${el.dataset.guide}:`);
-        if(txt) fill(el, txt);
+        if(txt) { el.innerText = txt; el.classList.add('filled'); }
     }
 
-    function fill(el, txt) { el.innerText = txt; el.classList.add('filled'); }
-
     function upload() {
-        const content = document.getElementById('sentenceArea').innerText;
-        const board = document.getElementById('board');
+        if([...document.querySelectorAll('.drop-zone')].some(z => !z.classList.contains('filled'))) { alert("填完再分享喔！"); return; }
         const div = document.createElement('div');
         div.className = `msg bg-${Math.floor(Math.random()*3)}`;
-        // 加入刪除作品按鈕
-        div.innerHTML = `<button class="msg-del" onclick="if(confirm('確定要刪除這則留言嗎？')) this.parentElement.remove()">✕</button>
-                         <strong>同學分享：</strong><br><br>${content}`;
-        board.prepend(div);
-        
-        // 分享後清空當前空格以便下一次輸入
+        div.innerHTML = `<button class="msg-del" onclick="this.parentElement.remove()">✕</button><strong>同學作品：</strong><br><br>${document.getElementById('sentenceArea').innerText}`;
+        document.getElementById('board').prepend(div);
         selectScenario(currentType);
-        alert("作品已分享！您可以點擊作品右上角的 X 來刪除它。");
+    }
+
+    // 教師後台功能
+    function toggleAdmin() {
+        const p = document.getElementById('teacherPanel');
+        p.style.display = p.style.display === 'none' ? 'block' : 'none';
+        if(p.style.display === 'block') {
+            document.getElementById('edit-reminisce').value = scenarios.reminisce.template;
+            document.getElementById('edit-happy').value = scenarios.happy.template;
+            document.getElementById('edit-sad').value = scenarios.sad.template;
+        }
+    }
+
+    function saveAdminConfigs() {
+        scenarios.reminisce.template = document.getElementById('edit-reminisce').value;
+        scenarios.happy.template = document.getElementById('edit-happy').value;
+        scenarios.sad.template = document.getElementById('edit-sad').value;
+        renderSentenceArea();
+        alert("教師設定已更新！");
+        toggleAdmin();
     }
 
     window.onload = () => selectScenario('reminisce');
 </script>
-
 </body>
 </html>
