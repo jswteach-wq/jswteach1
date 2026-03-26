@@ -3,193 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>借事抒情：雲端同步教學版</title>
+    <title>「借事抒情」情境創作盤</title>
     <style>
-        :root { --primary: #4a90e2; --bg: #f8fafc; --card: #ffffff; }
-        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg); padding: 20px; color: #333; }
-        .container { max-width: 1000px; margin: auto; background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; }
-        #teacherPanel { display: none; background: #fffde7; border: 2px dashed #f1c40f; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
-        .edit-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .edit-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-        h1 { text-align: center; color: var(--primary); margin-bottom: 20px; }
-        .admin-toggle { position: absolute; top: 10px; right: 10px; font-size: 0.8rem; background: #eee; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px; opacity: 0.6; }
-        .input-section { background: #e3f2fd; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
-        .input-group { display: flex; gap: 10px; margin-top: 10px; }
-        #wordInput { flex: 1; padding: 12px; border: 2px solid #bcd0e7; border-radius: 8px; }
-        .add-btn { padding: 10px 25px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .word-bank { display: flex; flex-wrap: wrap; gap: 10px; min-height: 80px; padding: 15px; border: 2px dashed #cbd5e0; border-radius: 12px; background: #fff; margin-bottom: 30px; }
-        .word-item { padding: 6px 15px; background: #6c5ce7; color: white; border-radius: 20px; cursor: grab; font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .sentence-slider { position: relative; background: #fff; border: 3px solid #e3f2fd; border-radius: 20px; padding: 50px 70px; margin-bottom: 30px; min-height: 180px; display: flex; align-items: center; }
-        .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 10; }
-        .prev-btn { left: 15px; } .next-btn { right: 15px; }
-        .sentence-content { font-size: 1.4rem; line-height: 3.5; width: 100%; word-break: break-all; }
-        .drop-zone { display: inline-flex; align-items: center; justify-content: center; min-width: 110px; height: 40px; border: 2px dashed #bdc3c7; border-radius: 8px; margin: 0 5px; padding: 0 12px; vertical-align: middle; color: #999; font-size: 0.9rem; cursor: pointer; background-color: #fafafa; }
-        .drop-zone.filled { border: 2px solid #2ecc71; color: #2980b9; background-color: #fff; font-weight: bold; font-size: 1.25rem; height: auto; min-height: 40px; line-height: 1.4; padding: 5px 15px; white-space: normal; }
-        .upload-section { text-align: center; margin-bottom: 30px; }
-        .upload-btn { background: #27ae60; color: white; padding: 12px 40px; border: none; border-radius: 30px; font-size: 1.1rem; cursor: pointer; font-weight: bold; }
-        .message-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 20px; background: #f1f2f6; border-radius: 15px; }
-        .message-item { padding: 15px; border-radius: 12px; font-size: 1.05rem; box-shadow: 3px 3px 8px rgba(0,0,0,0.05); transform: rotate(-0.5deg); }
-        .bg-0 { background: #dff9fb; } .bg-1 { background: #e3fced; } .bg-2 { background: #fef9e7; } .bg-3 { background: #fce4ec; } .bg-4 { background: #f3f0ff; }
-        #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 999; font-weight: bold; }
+        :root { --primary: #4a90e2; --bg: #f4f7f6; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); position: relative; }
+        
+        /* 情境選擇器 */
+        .scen-selector { display: flex; justify-content: center; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; }
+        .scen-btn { padding: 12px 25px; border: 2px solid var(--primary); background: white; color: var(--primary); border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; font-size: 1rem; }
+        .scen-btn.active { background: var(--primary); color: white; transform: scale(1.05); }
+
+        /* 詞庫區 */
+        .word-bank { display: flex; flex-wrap: wrap; gap: 10px; min-height: 80px; padding: 15px; border: 2px dashed #cbd5e0; border-radius: 12px; margin-bottom: 20px; background: #fff; align-items: center; }
+        .word-item { padding: 8px 18px; background: #6c5ce7; color: white; border-radius: 20px; cursor: grab; font-size: 0.95rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .word-item:hover { background: #5649c1; }
+
+        /* 句子空格區 */
+        .sentence-box { font-size: 1.6rem; line-height: 3; padding: 40px; border: 3px solid #e3f2fd; border-radius: 15px; background: #fafafa; min-height: 150px; }
+        .drop-zone { 
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 130px; height: 45px; border: 2px dashed #bdc3c7; border-radius: 8px; 
+            margin: 0 8px; vertical-align: middle; color: #bbb; font-size: 1.1rem; 
+            cursor: pointer; background: white; transition: 0.2s;
+        }
+        .drop-zone.filled { 
+            border: 2px solid #2ecc71; color: #2980b9; font-weight: bold; 
+            font-size: 1.4rem; background: #fff; padding: 0 15px; min-width: auto; height: auto; line-height: 1.2;
+        }
+        
+        /* 分享按鈕 */
+        .upload-btn { display: block; width: 250px; margin: 30px auto; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 50px; font-size: 1.2rem; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); transition: 0.3s; }
+        .upload-btn:hover { transform: translateY(-2px); background: #219150; }
+
+        /* 留言板與刪除按鈕 */
+        .message-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-top: 30px; }
+        .msg { padding: 20px; border-radius: 15px; background: #fff; box-shadow: 3px 3px 12px rgba(0,0,0,0.06); position: relative; line-height: 1.6; }
+        .delete-btn {
+            position: absolute; top: 10px; right: 10px; width: 24px; height: 24px;
+            background: #ff7675; color: white; border: none; border-radius: 50%;
+            cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center;
+        }
+        .delete-btn:hover { background: #d63031; }
+
+        .bg-0 { background: #dff9fb; border-bottom: 4px solid #c7ecee; }
+        .bg-1 { background: #e3fced; border-bottom: 4px solid #c8f7dc; }
+        .bg-2 { background: #fef9e7; border-bottom: 4px solid #fcf3cf; }
     </style>
 </head>
 <body>
 
-<div id="loadingOverlay">正在同步雲端資料...</div>
-
 <div class="container">
-    <button class="admin-toggle" onclick="toggleAdmin()">⚙️ 教師設定</button>
-    <h1>🖋️ 「借事抒情」雲端寫作盤</h1>
-
-    <div id="teacherPanel">
-        <strong>🛠️ 雲端句型管理 (格式: [引導語])：</strong><br><br>
-        <div id="configArea"></div>
-        <button onclick="addNewConfigRow()" style="padding:5px 10px;">＋ 新增句型</button>
-        <button onclick="saveConfig()" style="background:#27ae60; color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">儲存並同步到雲端</button>
+    <h1 style="text-align:center; color: var(--primary);">📝 「借事抒情」情境創作挑戰</h1>
+    
+    <div style="text-align:center; margin-bottom: 10px; color: #666;">步驟 1：點選情境 ➔ 步驟 2：填寫空格 ➔ 步驟 3：分享作品</div>
+    
+    <div class="scen-selector" id="btnGroup">
+        <button class="scen-btn active" data-type="reminisce" onclick="selectScenario('reminisce')">🍂 懷舊回憶</button>
+        <button class="scen-btn" data-type="happy" onclick="selectScenario('happy')">☀️ 快樂時光</button>
+        <button class="scen-btn" data-type="sad" onclick="selectScenario('sad')">💧 挫折心情</button>
     </div>
 
-    <div class="input-section">
-        <strong>1. 寫作詞庫</strong>
-        <div class="input-group">
-            <input type="text" id="wordInput" placeholder="輸入自訂詞彙...">
-            <button class="add-btn" onclick="addWord()">加入</button>
+    <div class="word-bank" id="wordBank" ondragover="event.preventDefault()">
         </div>
-    </div>
-    <div class="word-bank" id="wordBank" ondragover="event.preventDefault()"></div>
 
-    <div class="sentence-slider">
-        <button class="nav-btn prev-btn" onclick="changeSentence(-1)">❮</button>
-        <div id="sentenceArea" class="sentence-content"></div>
-        <button class="nav-btn next-btn" onclick="changeSentence(1)">❯</button>
-    </div>
+    <div class="sentence-box" id="sentenceArea">
+        </div>
 
-    <div class="upload-section">
-        <button class="upload-btn" onclick="uploadMessage()">🚀 分享到全班留言板</button>
-    </div>
-
-    <div class="message-board" id="messageBoard"></div>
+    <button class="upload-btn" onclick="upload()">🚀 分享作品至看板</button>
+    
+    <h3 style="border-left: 5px solid var(--primary); padding-left: 10px; margin-top: 40px;">💬 作品展示牆（只能刪除自己的作品喔！）</h3>
+    <div class="message-board" id="board"></div>
 </div>
 
 <script>
-    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBbtw0As7qv6GHIkojw0uLsDV_sNkZedIXo25I1m47yEr7OMypQTQziJOtGVYphydt/exec'; // <--- 務必填入你的網址
+    // 預設情境內容
+    const scenarios = {
+        reminisce: {
+            words: ["舊照片", "泛黃", "外公", "操場角落", "酸溜溜", "那把雨傘", "粗糙", "布滿灰塵"],
+            template: "看著那 [物件]，我彷彿回到了那個 [場景] 的午後，心裡感覺 [感受] 的。"
+        },
+        happy: {
+            words: ["閃閃發亮", "熱鬧非凡", "最好的玩伴", "大聲歡笑", "冰淇淋", "公園", "熱騰騰", "笑咪咪"],
+            template: "記得那天在 [地點]，我和 [人物] 一起 [動作]，那是我最 [心情] 的回憶。"
+        },
+        sad: {
+            words: ["斷了線的風箏", "細雨綿綿", "吞了一顆酸梅", "考卷", "獨自一人", "沉重", "昏暗", "總是嚴厲的爸爸"],
+            template: "手裡拿著 [物件]，窗外正下著 [天氣]，我的心情就像 [比喻] 一樣。"
+        }
+    };
 
-    let sentenceConfigs = [];
-    let currentIdx = 0;
-    const defaultWords = ["泛黃", "粗糙", "閃閃發亮", "布滿灰塵", "總是嚴厲的爸爸", "愛笑的外婆", "最好的玩伴", "蟬鳴陣陣", "細雨綿綿", "熱鬧非凡", "吞了一顆酸梅", "照進裂縫的陽光", "斷了線的風箏"];
+    let currentType = 'reminisce';
 
-    // 初始化與讀取雲端
-    async function syncFromCloud() {
-        document.getElementById('loadingOverlay').style.display = 'flex';
-        try {
-            const resp = await fetch(GOOGLE_SCRIPT_URL);
-            const data = await resp.json();
-            
-            // 更新句型
-            sentenceConfigs = data.sentences.length > 0 ? data.sentences : ["[物件] 讓我想起 [回憶]"];
-            
-            // 更新留言板
-            const board = document.getElementById('messageBoard');
-            board.innerHTML = "";
-            data.messages.reverse().forEach(m => displayMessage(m.content, m.colorIdx));
-            
-            renderSentence();
-        } catch (e) { alert("同步失敗，請確認 Script 網址或網路。"); }
-        document.getElementById('loadingOverlay').style.display = 'none';
-    }
-
-    // 上傳作品
-    async function uploadMessage() {
-        const zones = document.querySelectorAll('.drop-zone');
-        if(![...zones].every(z => z.classList.contains('filled'))) { alert("還有空格沒填完！"); return; }
-        
-        const content = document.getElementById('sentenceArea').innerText;
-        const colorIdx = Math.floor(Math.random() * 5);
-        
-        displayMessage(content, colorIdx); // 先顯示
-        renderSentence(); // 重置空格
-
-        await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({ type: "UPLOAD_MESSAGE", content: content, colorIdx: colorIdx })
+    // 1. 選擇情境
+    function selectScenario(type) {
+        currentType = type;
+        // 更新按鈕顏色
+        document.querySelectorAll('.scen-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-type') === type);
         });
-    }
 
-    // 儲存句型到雲端
-    async function saveConfig() {
-        const inputs = document.querySelectorAll('.edit-input');
-        const newList = [...inputs].map(i => i.value.trim()).filter(v => v !== "");
+        const data = scenarios[type];
         
-        await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            body: JSON.stringify({ type: "SAVE_SENTENCES", payload: newList })
+        // 更新詞庫
+        const bank = document.getElementById('wordBank');
+        bank.innerHTML = "";
+        data.words.forEach(w => {
+            const div = document.createElement('div');
+            div.className = 'word-item'; div.innerText = w; div.draggable = true;
+            div.ondragstart = (e) => e.dataTransfer.setData('text', e.target.innerText);
+            bank.appendChild(div);
         });
-        
-        alert("句型已同步到雲端！");
-        location.reload(); // 重新整理以確保同步
-    }
 
-    // --- 介面控制與拖放邏輯 (與先前版本一致) ---
-    function displayMessage(content, idx) {
-        const div = document.createElement('div');
-        div.className = `message-item bg-${idx}`;
-        div.innerHTML = `<strong>同學分享：</strong><br>${content}`;
-        document.getElementById('messageBoard').prepend(div);
-    }
-
-    function renderSentence() {
+        // 更新句子
         const area = document.getElementById('sentenceArea');
-        if (sentenceConfigs.length === 0) return;
-        area.innerHTML = sentenceConfigs[currentIdx].replace(/\[(.*?)\]/g, (m, p1) => 
+        area.innerHTML = data.template.replace(/\[(.*?)\]/g, (match, p1) => 
             `<span class="drop-zone" data-guide="${p1}" ondrop="drop(event)" ondragover="event.preventDefault()" onclick="manualInput(this)">${p1}</span>`
         );
     }
 
-    function changeSentence(dir) {
-        currentIdx = (currentIdx + dir + sentenceConfigs.length) % sentenceConfigs.length;
-        renderSentence();
-    }
-
-    function addWord() {
-        const input = document.getElementById('wordInput');
-        if (input.value.trim()) { createWordItem(input.value.trim()); input.value = ''; }
-    }
-
-    function createWordItem(text) {
-        const div = document.createElement('div');
-        div.className = 'word-item'; div.draggable = true; div.innerText = text;
-        div.ondragstart = (e) => e.dataTransfer.setData('text', e.target.innerText);
-        document.getElementById('wordBank').appendChild(div);
-    }
-
+    // 2. 拖放與輸入邏輯
     function drop(e) {
         e.preventDefault();
         const text = e.dataTransfer.getData('text');
-        fillZone(e.target, text);
+        if(e.target.classList.contains('drop-zone')) fillZone(e.target, text);
     }
 
     function manualInput(el) {
-        const txt = prompt(`填入 ${el.dataset.guide}:`);
-        if(txt) fillZone(el, txt);
+        const text = prompt(`填入 ${el.dataset.guide}:`);
+        if(text) fillZone(el, text);
     }
 
-    function fillZone(el, txt) { el.innerText = txt; el.classList.add('filled'); }
-
-    function toggleAdmin() {
-        const p = document.getElementById('teacherPanel');
-        p.style.display = p.style.display === 'none' ? 'block' : 'none';
-        const area = document.getElementById('configArea');
-        area.innerHTML = sentenceConfigs.map(s => `<div class="edit-row"><input class="edit-input" value="${s}"></div>`).join('');
+    function fillZone(el, text) {
+        el.innerText = text;
+        el.classList.add('filled');
     }
 
-    function addNewConfigRow() {
-        const area = document.getElementById('configArea');
-        area.insertAdjacentHTML('beforeend', `<div class="edit-row"><input class="edit-input" value=""></div>`);
+    // 3. 上傳與刪除
+    function upload() {
+        const zones = document.querySelectorAll('.drop-zone');
+        if([...zones].some(z => !z.classList.contains('filled'))) {
+            alert("還有空格沒填完喔！"); return;
+        }
+
+        const content = document.getElementById('sentenceArea').innerText;
+        const colorIdx = Math.floor(Math.random() * 3);
+        
+        const board = document.getElementById('board');
+        const div = document.createElement('div');
+        div.className = `msg bg-${colorIdx}`;
+        // 這裡加上刪除按鈕，因為是自己發的所以看得到
+        div.innerHTML = `<button class="delete-btn" onclick="this.parentElement.remove()">✕</button>
+                         <strong>同學作品：</strong><br><br>${content}`;
+        
+        board.prepend(div);
+        
+        // 重置當前句子
+        selectScenario(currentType);
+        alert("上傳成功！你可以在作品右上角點選 ✕ 來清除它。");
     }
 
-    window.onload = () => {
-        defaultWords.forEach(createWordItem);
-        syncFromCloud();
-    };
+    // 網頁啟動時載入第一個情境
+    window.onload = () => selectScenario('reminisce');
 </script>
+
 </body>
 </html>
