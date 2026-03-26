@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>隱藏的真心話 - 雲端管理版</title>
+    <title>隱藏的真心話 - 修正版</title>
     <style>
         :root { --primary: #4a90e2; --bg: #f8fafc; --card: #ffffff; --danger: #ff7675; }
         body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg); padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: auto; background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; }
         
-        /* 教師面板 */
         #teacherPanel { display: none; background: #fffde7; border: 2px dashed #f1c40f; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
         .edit-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .edit-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
@@ -21,32 +20,52 @@
         #wordInput { flex: 1; padding: 12px; border: 2px solid #bcd0e7; border-radius: 8px; }
         .add-btn { padding: 10px 25px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        /* 詞庫與刪除按鈕 */
+        /* 詞庫區 */
         .word-bank { display: flex; flex-wrap: wrap; gap: 10px; min-height: 80px; padding: 15px; border: 2px dashed #cbd5e0; border-radius: 12px; background: #fff; margin-bottom: 30px; }
         .word-item { 
-            display: flex; align-items: center; gap: 8px; padding: 6px 15px; 
+            display: inline-flex; align-items: center; gap: 8px; padding: 6px 15px; 
             background: #6c5ce7; color: white; border-radius: 20px; cursor: grab; 
             font-size: 0.9rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
         }
-        .del-word { background: rgba(255,255,255,0.3); border: none; color: white; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 10px; display: flex; align-items: center; justify-content: center; }
-        .del-word:hover { background: var(--danger); }
+        .del-word { background: rgba(255,255,255,0.3); border: none; color: white; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 10px; line-height: 1; }
 
         /* 句型滑動 */
         .sentence-slider { position: relative; background: #fff; border: 3px solid #e3f2fd; border-radius: 20px; padding: 50px 70px; margin-bottom: 30px; min-height: 180px; display: flex; align-items: center; }
         .nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; z-index: 10; }
         .prev-btn { left: 15px; } .next-btn { right: 15px; }
-        .sentence-content { font-size: 1.4rem; line-height: 3.5; width: 100%; word-break: break-all; }
+        .sentence-content { font-size: 1.4rem; line-height: 3.5; width: 100%; word-break: break-all; text-align: center; }
 
         .drop-zone { display: inline-flex; align-items: center; justify-content: center; min-width: 110px; height: 40px; border: 2px dashed #bdc3c7; border-radius: 8px; margin: 0 5px; padding: 0 12px; vertical-align: middle; color: #999; font-size: 0.9rem; cursor: pointer; background-color: #fafafa; }
-        .drop-zone.filled { border: 2px solid #2ecc71; color: #2980b9; background-color: #fff; font-weight: bold; font-size: 1.25rem; height: auto; min-height: 40px; line-height: 1.4; padding: 5px 15px; white-space: normal; }
+        .drop-zone.filled { border: 2px solid #2ecc71; color: #2980b9; background-color: #fff; font-weight: bold; font-size: 1.25rem; height: auto; min-height: 40px; line-height: 1.4; padding: 5px 15px; }
 
         .upload-section { text-align: center; margin-bottom: 30px; }
         .upload-btn { background: #27ae60; color: white; padding: 12px 40px; border: none; border-radius: 30px; font-size: 1.1rem; cursor: pointer; font-weight: bold; }
 
-        /* 留言板與刪除 */
-        .message-board { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; padding: 20px; background: #f1f2f6; border-radius: 15px; }
-        .message-item { position: relative; padding: 20px 15px 15px; border-radius: 12px; font-size: 1.05rem; box-shadow: 3px 3px 8px rgba(0,0,0,0.05); }
-        .del-msg { position: absolute; top: 5px; right: 5px; background: var(--danger); color: white; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; }
+        /* 留言板區：修正空白問題的核心 */
+        .message-board { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 20px; 
+            padding: 20px; 
+            background: #f1f2f6; 
+            border-radius: 15px;
+            align-items: start;
+        }
+        .message-item { 
+            position: relative; 
+            padding: 25px 15px 15px; 
+            border-radius: 12px; 
+            font-size: 1.05rem; 
+            box-shadow: 3px 3px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .del-msg { 
+            position: absolute; top: 8px; right: 8px; 
+            background: var(--danger); color: white; border: none; 
+            border-radius: 50%; width: 22px; height: 22px; 
+            cursor: pointer; font-size: 12px; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
 
         .bg-0 { background: #dff9fb; } .bg-1 { background: #e3fced; } .bg-2 { background: #fef9e7; } .bg-3 { background: #fce4ec; } .bg-4 { background: #f3f0ff; }
         #loadingOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; justify-content: center; align-items: center; z-index: 999; font-weight: bold; }
@@ -67,11 +86,11 @@
         <button onclick="saveConfig()" style="background:#27ae60; color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">儲存句型</button>
         <hr>
         <strong>🧹 留言板管理：</strong><br><br>
-        <button onclick="clearBoard()" style="background:var(--danger); color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">清空全班留言板(慎用)</button>
+        <button onclick="clearBoard()" style="background:var(--danger); color:white; border:none; padding:8px 20px; border-radius:5px; cursor:pointer;">清空全班留言板</button>
     </div>
 
     <div class="input-section">
-        <strong>1. 寫作詞庫 (點擊詞語中的 X 可刪除)</strong>
+        <strong>1. 寫作詞庫 (點擊 X 可刪除)</strong>
         <div class="input-group">
             <input type="text" id="wordInput" placeholder="輸入自訂詞彙...">
             <button class="add-btn" onclick="addWord()">加入</button>
@@ -93,6 +112,7 @@
 </div>
 
 <script>
+    // 請保留您的 Script URL
     const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBbtw0As7qv6GHIkojw0uLsDV_sNkZedIXo25I1m47yEr7OMypQTQziJOtGVYphydt/exec';
 
     let sentenceConfigs = [];
@@ -109,7 +129,7 @@
             board.innerHTML = "";
             data.messages.reverse().forEach(m => displayMessage(m.content, m.colorIdx));
             renderSentence();
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("同步出錯:", e); }
         document.getElementById('loadingOverlay').style.display = 'none';
     }
 
@@ -118,21 +138,22 @@
         if(![...zones].every(z => z.classList.contains('filled'))) { alert("還有空格沒填完！"); return; }
         const content = document.getElementById('sentenceArea').innerText;
         const colorIdx = Math.floor(Math.random() * 5);
+        
         displayMessage(content, colorIdx); 
         renderSentence(); 
+
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
             body: JSON.stringify({ type: "UPLOAD_MESSAGE", content: content, colorIdx: colorIdx })
         });
     }
 
-    // 這裡是新增的：清空留言板功能
     async function clearBoard() {
-        if(!confirm("確定要清空所有同學的留言嗎？此動作無法復原。")) return;
+        if(!confirm("確定要清空所有同學的留言嗎？")) return;
         document.getElementById('loadingOverlay').style.display = 'flex';
         await fetch(GOOGLE_SCRIPT_URL, {
             method: 'POST',
-            body: JSON.stringify({ type: "CLEAR_MESSAGES" }) // 注意：這需要你在 Google Script 也加上對應邏輯
+            body: JSON.stringify({ type: "CLEAR_MESSAGES" })
         });
         location.reload();
     }
@@ -148,13 +169,23 @@
         location.reload();
     }
 
+    // 核心修正：顯示與移除留言
     function displayMessage(content, idx) {
+        const board = document.getElementById('messageBoard');
         const div = document.createElement('div');
         div.className = `message-item bg-${idx}`;
-        // 增加刪除按鈕 (僅前端刪除，若要徹底刪除需搭配資料庫 ID，目前設計點擊即消失)
-        div.innerHTML = `<button class="del-msg" onclick="this.parentElement.remove()">✕</button>
-                         <strong>同學分享：</strong><br>${content}`;
-        document.getElementById('messageBoard').prepend(div);
+        
+        // 建立刪除按鈕
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-msg';
+        delBtn.innerHTML = '✕';
+        delBtn.onclick = function() { 
+            div.remove(); // 徹底從 DOM 中移除，不留空白
+        };
+
+        div.innerHTML = `<strong>同學分享：</strong><br>${content}`;
+        div.appendChild(delBtn);
+        board.prepend(div);
     }
 
     function renderSentence() {
@@ -175,17 +206,26 @@
         if (input.value.trim()) { createWordItem(input.value.trim()); input.value = ''; }
     }
 
-    // 修改詞語產生函數，加入刪除鈕
     function createWordItem(text) {
         const div = document.createElement('div');
         div.className = 'word-item'; 
         div.draggable = true;
-        div.innerHTML = `<span>${text}</span><button class="del-word" onclick="this.parentElement.remove()">✕</button>`;
+        
+        const span = document.createElement('span');
+        span.innerText = text;
+        
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-word';
+        delBtn.innerText = '✕';
+        delBtn.onclick = function(e) { e.stopPropagation(); div.remove(); };
+
+        div.appendChild(span);
+        div.appendChild(delBtn);
+        
         div.ondragstart = (e) => {
-            // 只抓取文字內容，不抓取按鈕的 X
-            const txt = e.target.querySelector('span').innerText;
-            e.dataTransfer.setData('text', txt);
+            e.dataTransfer.setData('text', span.innerText);
         };
+        
         document.getElementById('wordBank').appendChild(div);
     }
 
@@ -200,7 +240,11 @@
         if(txt) fillZone(el, txt);
     }
 
-    function fillZone(el, txt) { el.innerText = txt; el.classList.add('filled'); }
+    function fillZone(el, txt) { 
+        if(!el.classList.contains('drop-zone')) return;
+        el.innerText = txt; 
+        el.classList.add('filled'); 
+    }
 
     function toggleAdmin() {
         const p = document.getElementById('teacherPanel');
